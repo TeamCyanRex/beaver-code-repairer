@@ -70,7 +70,7 @@ fn cross_vec_str(
     for main in main_key.iter() {
         let mut subs = HashMap::new();
         for sub in sub_key.iter() {
-            subs.insert(main.clone(), main.to_owned() + "-" + sub);
+            subs.insert(sub.clone(), main.to_owned() + "-" + sub);
         }
         res.insert(main.clone(), subs);
     }
@@ -79,12 +79,12 @@ fn cross_vec_str(
 
 #[derive(Debug, Default)]
 pub struct CssRenderList {
-    themelist: Vec<String>,
+    pub themelist: Vec<String>,
     widgitlist: Vec<String>,
-    renderlist: HashMap<String, HashMap<String, String>>,
+    pub renderlist: HashMap<String, HashMap<String, String>>,
 }
 impl CssRenderList {
-  pub(crate)  fn new<P: AsRef<Path>>(path: P) -> Self {
+    pub(crate) fn new<P: AsRef<Path>>(path: P) -> Self {
         if let Ok(Some(vec_csses)) = walk_css_dir(path) {
             if let Some(first_css) = vec_csses.first() {
                 let mut widgitlist = vec![];
@@ -123,4 +123,10 @@ impl CssRenderList {
             Default::default()
         }
     }
+}
+
+#[derive(Debug, Default)]
+pub struct CssRenderListRef<'a> {
+    themelist: Vec<&'a str>,
+    Renderlist: HashMap<&'a str, HashMap<&'a str, &'a str>>,
 }

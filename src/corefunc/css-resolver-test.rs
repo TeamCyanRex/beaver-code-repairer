@@ -58,6 +58,6 @@ fn css_class_regex_test() {
 }
 #[test]
 fn renderlist_test() {
-    let res=CssRenderList::new(Path::new(r"D:\LAB\Rust\Project\beaver-code-repairer\css"));
+    let res=CssRenderList::new(Path::new(r"css"));
     println!("{:#?}",res);
 }
