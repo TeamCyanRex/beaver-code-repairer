@@ -11,6 +11,22 @@ pub fn is_css_file<P: AsRef<Path>>(path: P) -> bool {
     let suffix_str = suffix.map(|s| s.to_str());
     suffix_str == Some(Some("css"))
 }
+pub fn walk_dir_for_css<P: AsRef<Path>>(folder: P) -> io::Result<Option<Vec<Box<PathBuf>>>> {
+    let path = folder.as_ref();
+    let mut res_vec = vec![];
+    if let Ok(entrys) = fs::read_dir(path) {
+        for entry in entrys {
+            let css_file = entry?.path();
+            let css_file_out = css_file.clone();
+            if is_css_file(css_file) {
+                res_vec.push(Box::new(css_file_out));
+            }
+        }
+        Ok(Some(res_vec))
+    } else {
+        Ok(None)
+    }
+}
 pub fn walk_css_dir<P: AsRef<Path>>(folder: P) -> io::Result<Option<Vec<Box<PathBuf>>>> {
     let path = folder.as_ref();
     let pathbuf = path.to_path_buf();
@@ -76,7 +92,13 @@ fn cross_vec_str(
     }
     res
 }
-
+fn remove_hash_suffix(tar: &str) -> String {
+    if let Some(index) = tar.find('-') {
+        tar[0..index].to_owned()
+    } else {
+        tar.to_owned()
+    }
+}
 #[derive(Debug, Default)]
 pub struct CssRenderList {
     pub themelist: Vec<String>,
@@ -85,7 +107,7 @@ pub struct CssRenderList {
 }
 impl CssRenderList {
     pub(crate) fn new<P: AsRef<Path>>(path: P) -> Self {
-        if let Ok(Some(vec_csses)) = walk_css_dir(path) {
+        if let Ok(Some(vec_csses)) = walk_dir_for_css(path) {
             if let Some(first_css) = vec_csses.first() {
                 let mut widgitlist = vec![];
                 let mut themelist = vec![];
@@ -105,7 +127,7 @@ impl CssRenderList {
                         _ => return Default::default(),
                     });
                     if let Some(theme) = theme_opt {
-                        themelist.push(theme);
+                        themelist.push(remove_hash_suffix(&theme));
                     } else {
                         return Default::default();
                     }
@@ -129,4 +151,10 @@ impl CssRenderList {
 pub struct CssRenderListRef<'a> {
     themelist: Vec<&'a str>,
     Renderlist: HashMap<&'a str, HashMap<&'a str, &'a str>>,
+}
+#[test]
+fn remove_hash_suffix_test() {
+    assert_eq!(remove_hash_suffix("xx-123"), "xx");
+    assert_eq!(remove_hash_suffix("xx"), "xx");
+    assert_eq!(remove_hash_suffix("xx-xx-xx"), "xx");
 }

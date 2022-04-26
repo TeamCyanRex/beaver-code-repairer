@@ -4,13 +4,19 @@ use yew::prelude::*;
 mod corefunc;
 mod render;
 use render::themes::get_render;
+mod widgets;
+use widgets::buttons::ButtonT;
 #[function_component(App)]
 fn hello_world() -> Html {
-    let color = get_render("color");
     html! {
-        <p class={classes!(&color)}>{"Hello"}</p>
+        <>
+        <ButtonT val=1></ButtonT>
+        <p>{get_render("color")}</p>
+        </>
     }
 }
+
 fn main() {
-    yew::start_app::<App>();
+   yew::start_app::<App>();
+   //println!("{}",THEME_CENTERc.get_render("color"))
 }

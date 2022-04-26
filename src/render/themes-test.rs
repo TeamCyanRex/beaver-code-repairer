@@ -22,11 +22,38 @@ fn render_now_test() {
 }
 
 #[test]
-fn change_theme_test() {
-   assert_eq!(get_render("color"),"river-color");
-  // assert_eq!(get_default_theme(),"dark");
-   change_theme("lab");
-   assert_eq!(get_render("color"),"lab-color");
-   set_default_theme("lab");
-   assert_eq!(get_default_theme(),"lab");
+fn theme_center_test() {
+    let mut themes_center=ThemesCenter::new(Path::new(r"css"), "river");
+    assert_eq!(themes_center.get_default_theme(),"river");
+    themes_center.set_default_theme("lab");
+    assert_eq!(themes_center.get_default_theme(),"lab");
+    assert_eq!(themes_center.get_render("color"),"river-color");
+    themes_center.change_theme("lab");
+    assert_eq!(themes_center.get_render("color"),"lab-color");
+}
+#[test]
+fn themes_center_default_test() {
+    let mut themes_center=ThemesCenter::default_init();
+    println!("{:#?}",themes_center);
+    assert_eq!(themes_center.get_default_theme(),"dark");
+    themes_center.set_default_theme("lab");
+    assert_eq!(themes_center.get_default_theme(),"lab");
+    assert_eq!(themes_center.get_render("color"),"dark-color");
+    themes_center.change_theme("lab");
+    assert_eq!(themes_center.get_render("color"),"lab-color");
+    themes_center.change_theme("light");
+    assert_eq!(themes_center.get_render("color"),"light-color");
+}
+#[test]
+fn themes_center_mutex_default_test() {
+    let mut themes_center=ThemesCenterWithMutexDefaultTheme::default_init();
+    println!("{:#?}",themes_center);
+    assert_eq!(themes_center.get_default_theme(),"dark");
+    themes_center.set_default_theme("lab");
+    assert_eq!(themes_center.get_default_theme(),"lab");
+    assert_eq!(themes_center.get_render("color"),"dark-color");
+    themes_center.change_theme("lab");
+    assert_eq!(themes_center.get_render("color"),"lab-color");
+    themes_center.change_theme("light");
+    assert_eq!(themes_center.get_render("color"),"light-color");
 }
